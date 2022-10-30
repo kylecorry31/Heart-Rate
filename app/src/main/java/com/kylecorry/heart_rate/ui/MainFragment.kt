@@ -16,14 +16,18 @@ import com.kylecorry.andromeda.core.system.Resources
 import com.kylecorry.andromeda.fragments.BoundFragment
 import com.kylecorry.heart_rate.R
 import com.kylecorry.heart_rate.databinding.FragmentMainBinding
+import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.filters.MovingAverageFilter
+import com.kylecorry.sol.math.optimization.DispersionExtremaFinder
 import com.kylecorry.sol.math.optimization.Extremum
+import com.kylecorry.sol.math.statistics.Statistics
 import com.kylecorry.sol.units.Reading
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.Duration
 import java.time.Instant
 import javax.inject.Inject
+import kotlin.math.max
 import kotlin.math.roundToInt
 
 @AndroidEntryPoint
@@ -119,8 +123,7 @@ class MainFragment : BoundFragment<FragmentMainBinding>() {
             return
         }
 
-        val beats = findPeaks(readings.map { it.value }).filter { it.isHigh }
-            .map { readings[it.point.x.toInt()] }
+        val beats = findPeaks(readings)
 
         val durations = mutableListOf<Duration>()
         for (i in 1 until beats.size) {
@@ -141,7 +144,7 @@ class MainFragment : BoundFragment<FragmentMainBinding>() {
         )
 
         val beatSet = SimpleLineChart.Dataset(
-            SimpleLineChart.getDataFromReadings(beats) { it },
+            SimpleLineChart.getDataFromReadings(beats, readings.first().time) { it },
             Color.WHITE,
             circles = true,
             circleColor = Color.WHITE
@@ -150,57 +153,14 @@ class MainFragment : BoundFragment<FragmentMainBinding>() {
         chart.plot(listOf(rawSet, beatSet))
     }
 
-    fun findPeaks(values: List<Float>): List<Extremum> {
-        val debounceCount = 2
-        val step = 1
-        val last = values.first()
-        var decreasing = false
+    private fun findPeaks(values: List<Reading<Float>>): List<Reading<Float>> {
+        val lag = 5
+        val influence = 0.2f
+        val threshold = 1.5f
 
-        val extrema = mutableListOf<Extremum>()
-
-        var count = 0
-        var savedLevel = last
-
-        var x = 0
-        var saved = x
-
-        while (x <= values.lastIndex) {
-            val level = values[x]
-
-            if (decreasing) {
-                if (level < savedLevel) {
-                    savedLevel = level
-                    saved = x
-                    count = 0
-                } else {
-                    count++
-                }
-
-                if (count > debounceCount) {
-                    decreasing = false
-                    count = 0
-                    extrema.add(Extremum(Vector2(saved.toFloat(), savedLevel.toFloat()), false))
-                }
-            } else {
-                if (level > savedLevel) {
-                    savedLevel = level
-                    saved = x
-                    count = 0
-                } else {
-                    count++
-                }
-
-                if (count > debounceCount) {
-                    decreasing = true
-                    count = 0
-                    extrema.add(Extremum(Vector2(saved.toFloat(), savedLevel.toFloat()), true))
-                }
-            }
-
-            x += step
-        }
-
-        return extrema
+        return DispersionExtremaFinder(lag, threshold, influence).find(values.map { it.value })
+            .filter { it.isHigh }
+            .map { values[it.point.x.toInt()] }
     }
 
 }

@@ -80,7 +80,7 @@ dependencies {
     implementation("androidx.room:room-ktx:2.4.3")
 
     // Sol
-    implementation("com.github.kylecorry31:sol:6.2.0-beta01")
+    implementation("com.github.kylecorry31:sol:6.2.0-beta02")
 
     // Andromeda
     val andromedaVersion = "5.0.0-beta18"
