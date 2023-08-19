@@ -1,3 +1,5 @@
+import java.time.LocalDate
+
 plugins {
     id("com.android.application")
     kotlin("android")
@@ -44,6 +46,7 @@ android {
             initWith(getByName("debug"))
             signingConfig = signingConfigs.getByName("nightly")
             applicationIdSuffix = ".nightly"
+            versionNameSuffix = "-nightly-${LocalDate.now()}"
         }
     }
     testOptions {
