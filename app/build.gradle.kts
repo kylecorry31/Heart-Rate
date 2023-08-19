@@ -18,6 +18,16 @@ android {
         versionName = "0.1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+    signingConfigs {
+        nightly {
+            if (System.getProperty("nightly_store_file") != null) {
+                storeFile file(System.getProperty("nightly_store_file"))
+                storePassword System.getProperty("nightly_store_password")
+                keyAlias System.getProperty("nightly_key_alias")
+                keyPassword System.getProperty("nightly_key_password")
+            }
+        }
+    }
     buildFeatures {
         viewBinding = true
     }
@@ -29,6 +39,11 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+        create("nightly") {
+            initWith(getByName("debug"))
+            signingConfig = signingConfigs.getByName("nightly")
+            applicationIdSuffix = ".nightly"
         }
     }
     testOptions {
