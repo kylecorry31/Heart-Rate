@@ -1,0 +1,29 @@
+name: Nightly
+
+on:
+  schedule:
+    - cron:  "0 0 * * *"
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: set up JDK 11
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: 11
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+      - name: Build with Gradle
+        run: ./gradlew assembleDebug
+      - name: Archive
+        uses: actions/upload-artifact@v3
+        with:
+          name: Heart-Rate-Nightly.apk
+          path: ./build/outputs/apk/debug/*.apk
+          retention-days: 7
