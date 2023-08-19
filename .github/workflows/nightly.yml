@@ -31,5 +31,5 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: Heart-Rate-Nightly.apk
-          path: ./app/build/outputs/apk/debug/app-debug.apk
+          path: ./app/build/outputs/apk/nightly/*.apk
           retention-days: 7
