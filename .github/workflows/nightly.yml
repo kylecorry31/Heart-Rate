@@ -20,7 +20,6 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
       - name: Upload keystore
-        shell: bash
         run: echo ${NIGHTLY_STORE_FILE} | base64 -d > KEY_NIGHTLY.jks
         env:
           NIGHTLY_STORE_FILE: ${{ secrets.NIGHTLY_STORE_FILE }}
