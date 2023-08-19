@@ -19,12 +19,12 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     signingConfigs {
-        nightly {
+        create("nightly") {
             if (System.getProperty("nightly_store_file") != null) {
-                storeFile file(System.getProperty("nightly_store_file"))
-                storePassword System.getProperty("nightly_store_password")
-                keyAlias System.getProperty("nightly_key_alias")
-                keyPassword System.getProperty("nightly_key_password")
+                storeFile = file(System.getProperty("nightly_store_file"))
+                storePassword = System.getProperty("nightly_store_password")
+                keyAlias = System.getProperty("nightly_key_alias")
+                keyPassword = System.getProperty("nightly_key_password")
             }
         }
     }
