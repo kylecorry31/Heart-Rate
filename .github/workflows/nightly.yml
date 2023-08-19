@@ -19,15 +19,14 @@ jobs:
           java-version: 11
       - name: Make gradlew executable
         run: chmod +x ./gradlew
-      - name: Upload keystore
-        run: echo ${NIGHTLY_STORE_FILE} | base64 -d > KEY_NIGHTLY.jks
-        env:
-          NIGHTLY_STORE_FILE: ${{ secrets.NIGHTLY_STORE_FILE }}
       - name: Build APK
-        run: ./gradlew assembleNightly -Dnightly_store_file=KEY_NIGHTLY.jks -Dnightly_store_password="${NIGHTLY_STORE_PASSWORD}" -Dnightly_key_alias="${NIGHTLY_KEY_ALIAS}" -Dnightly_key_password="${NIGHTLY_STORE_PASSWORD}"
+        run: |
+          echo ${NIGHTLY_STORE_FILE} | base64 -d > KEY_NIGHTLY.jks
+          ./gradlew assembleNightly -Dnightly_store_file=KEY_NIGHTLY.jks -Dnightly_store_password="${NIGHTLY_STORE_PASSWORD}" -Dnightly_key_alias="${NIGHTLY_KEY_ALIAS}" -Dnightly_key_password="${NIGHTLY_STORE_PASSWORD}"
         env:
           NIGHTLY_STORE_PASSWORD: ${{ secrets.NIGHTLY_STORE_PASSWORD }}
           NIGHTLY_KEY_ALIAS: ${{ secrets.NIGHTLY_KEY_ALIAS }}
+          NIGHTLY_STORE_FILE: ${{ secrets.NIGHTLY_STORE_FILE }}
       - name: Archive
         uses: actions/upload-artifact@v3
         with:
