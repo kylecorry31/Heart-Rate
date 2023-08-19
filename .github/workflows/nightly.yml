@@ -30,7 +30,7 @@ jobs:
         run: jarsigner -keystore KEY_NIGHTLY.jks --storepass ${NIGHTLY_STORE_PASSWORD} -keypass ${NIGHTLY_STORE_PASSWORD} ./app/build/outputs/apk/debug/app-debug.apk ${NIGHTLY_KEY_ALIAS}
         env:
           NIGHTLY_STORE_PASSWORD: ${{ secrets.NIGHTLY_STORE_PASSWORD }}
-          NIGHTLY_KEY_ALIAS: ${{ secrets.NIGHTLY_KEY_ALIAS }
+          NIGHTLY_KEY_ALIAS: ${{ secrets.NIGHTLY_KEY_ALIAS }}
       - name: Archive
         uses: actions/upload-artifact@v3
         with:
