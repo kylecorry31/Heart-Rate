@@ -28,7 +28,7 @@ jobs:
           NIGHTLY_KEY_ALIAS: ${{ secrets.NIGHTLY_KEY_ALIAS }}
           NIGHTLY_STORE_FILE: ${{ secrets.NIGHTLY_STORE_FILE }}
       - name: Upload to release
-        uses: Shopify/upload-to-release@v1
+        uses: Shopify/upload-to-release@v1.0.1
         with:
           name: Heart-Rate-${{ github.event.release.tag_name }}.apk
           path: ./app/build/outputs/apk/nightly/*.apk
