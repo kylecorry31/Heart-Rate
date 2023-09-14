@@ -31,5 +31,5 @@ jobs:
         uses: Shopify/upload-to-release@v1.0.1
         with:
           name: Heart-Rate-${{ github.event.release.tag_name }}.apk
-          path: ./app/build/outputs/apk/nightly/*.apk
+          path: ./app/build/outputs/apk/nightly/app-nightly.apk
           repo-token: ${{ secrets.GITHUB_TOKEN }}
