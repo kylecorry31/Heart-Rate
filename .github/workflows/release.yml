@@ -1,0 +1,34 @@
+name: Release Upload
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        ref: ${{ github.event.release.tag_name }}
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'adopt'
+          java-version: 17
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+      - name: Build APK
+        run: |
+          echo ${NIGHTLY_STORE_FILE} | base64 -d > KEY_NIGHTLY.jks
+          ./gradlew assembleNightly -Dnightly_store_file=../KEY_NIGHTLY.jks -Dnightly_store_password="${NIGHTLY_STORE_PASSWORD}" -Dnightly_key_alias="${NIGHTLY_KEY_ALIAS}" -Dnightly_key_password="${NIGHTLY_STORE_PASSWORD}"
+        env:
+          NIGHTLY_STORE_PASSWORD: ${{ secrets.NIGHTLY_STORE_PASSWORD }}
+          NIGHTLY_KEY_ALIAS: ${{ secrets.NIGHTLY_KEY_ALIAS }}
+          NIGHTLY_STORE_FILE: ${{ secrets.NIGHTLY_STORE_FILE }}
+      - name: Upload to release
+        uses: Shopify/upload-to-release@v1
+        with:
+          name: Heart-Rate-${{ github.event.release.tag_name }}.apk
+          path: ./app/build/outputs/apk/nightly/*.apk
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
